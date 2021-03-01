@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Users</title>
+  <script src="https://cdn.zinggrid.com/zinggrid.min.js"></script>
+</head>
+<body>
+  <zing-grid
+    caption="User Management"
+    editor-controls
+    infinite
+    layout="row">
+    <zg-data 
+      src="https://reporting.allantan.site/api/users"
+      idKey="id">
+  </zing-grid>
+  <a href="./home">Back to Dashboard</a>
+</body>
+</html>

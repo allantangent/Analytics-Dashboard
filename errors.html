@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detailed Errors Report</title>
+  <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+  <script src="https://cdn.zinggrid.com/zinggrid.min.js"></script>
+  <style>
+    body {
+      background-color: darkgray;
+    }
+
+    .chart--container {
+      height: 100%;
+      width: 100%;
+      min-height: 530px;
+    }
+
+    zg-caption {
+      background-color: goldenrod;
+      color: white;
+      font-weight: bold;
+      opacity: 0.8;
+      text-align: center;
+      transition: 0.3s opacity;
+      font-size: 2rem;
+    }
+
+    .link {
+      width: 100%;
+      background-color: white;
+      display: grid;
+      place-items: center;
+    }
+
+    a {
+      text-decoration: none;
+      font-size: 2em;
+      padding: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="link"><h1>Detailed Errors Report</h1></div>
+  <br />
+  <div id="pieChart" class="chart--container"></div>
+  <br />
+  <zing-grid infinite caption="Error Types by Pages" context-menu="mymenu">
+    <zg-data id="zgData"></zg-data>
+    <zg-menu id="mymenu" replace="true">
+      <zg-button action="copycell">Copy Cell</zg-button>
+    </zg-menu>
+    </zing-grid>
+  <br />
+  <script>
+    // get error data (pie chart)
+    fetch('https://allantan.site/api/errors')
+    .then(response => response.json())
+    .then(data => {
+      let pageCount = {
+        'allantan.site': 0,
+        'Other': 0
+      }
+      let total = 0;
+      for(let obj in data) {
+        if(data[obj].url.includes("https://allantan.site")) {
+          pageCount['allantan.site']++;
+        } else {
+          pageCount['Other']++;
+        }
+      }
+
+      // calculate averages
+      for(let site in pageCount) {
+        total += pageCount[site];
+      }
+      let mainCount = pageCount['allantan.site'] / total * 100;
+      let otherCount = pageCount['Other'] / total * 100;
+
+      let chartConfig = {
+        type: 'pie',
+        backgroundColor: 'white',
+        title: {
+          text: 'Error Distribution by Page',
+          align: 'left',
+          fontColor: 'black',
+          fontFamily: 'Open Sans',
+          fontSize: '25px',
+          offsetX: '10px',
+        },
+        subtitle: {
+          text: 'September 2020',
+          align: 'left',
+          fontColor: '#8e99a9',
+          fontFamily: 'Open Sans',
+          fontSize: '16px',
+          offsetX: '10px',
+          offsetY: '10px'
+        },
+        plot: {
+          tooltip: {
+            text: '%npv%',
+            padding: '5 10',
+            fontFamily: 'Open Sans',
+            fontSize: '18px'
+          },
+          valueBox: {
+            text: '%t\n%npv%',
+            fontFamily: 'Open Sans',
+            placement: 'out'
+          },
+          animation: {
+            effect: 'ANIMATION_EXPAND_VERTICAL',
+            method: 'ANIMATION_REGULAR_EASE_OUT',
+            sequence: 'ANIMATION_BY_PLOT',
+            speed: 500
+          },
+          borderColor: '#2B313B',
+          borderWidth: '5px'
+        },
+        plotarea: {
+          margin: '20 0 0 0'
+        },
+        source: {
+          text: 'Source: allantan.site',
+          fontColor: '#8e99a9',
+          fontFamily: 'Open Sans',
+          textAlign: 'left'
+        },
+        series: [
+          {
+            text: 'allantan.site',
+            values: [mainCount],
+            backgroundColor: '#FF7965'
+          },
+          {
+            text: 'Other',
+            values: [otherCount],
+            backgroundColor: '#6877e5'
+          }
+        ]
+      };
+      zingchart.render({
+        id: 'pieChart',
+        data: chartConfig,
+        height: '100%',
+        width: '100%',
+      });
+    });
+
+    // get error data (pie chart)
+    fetch('https://allantan.site/api/errors')
+    .then(response => response.json())
+    .then(data => {
+      let adjData = [];
+      for(let obj in data) {
+        let temp = {
+          ErrorType: data[obj].name,
+          Location: data[obj].url,
+        }
+        adjData.push(temp);
+      }
+
+      document.getElementById('zgData').data = JSON.stringify(adjData);
+    });
+  </script>
+
+  <div class="link">
+    <a href="/authapp/home">Back to Dashboard</a>
+  </div>
+</body>
+</html>

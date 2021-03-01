@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logout</title>
+  <style>
+    body {
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background-color: slategrey;
+    }
+
+    section {
+      background-color: white;
+      width: 30vw;
+      height: 30vh;
+      display: grid;
+      place-items: center;
+      border-radius: 1em;
+      margin: 0;
+      box-shadow: 0 0 2em lightskyblue;
+    }
+
+    input {
+      height: 4em;
+      border-width: 0 0 1px 0;
+    }
+
+    input:focus {
+      outline: none;
+      background-color: lightgoldenrodyellow;
+    }
+
+    div {
+      display: grid;
+      grid-template-rows: 33% auto;
+      height: 100%;
+      width: 100%;
+      align-items: center;
+      padding-left: 1em;
+      justify-items: center;
+    }
+
+    a,a:visited,a:hover,a:active{
+      -webkit-backface-visibility:hidden;
+              backface-visibility:hidden;
+      position:relative;
+      transition:0.5s color ease;
+      text-decoration:none;
+      color: blue;
+      font-size:1.5em;
+    }
+    a:hover{
+      color:darkgoldenrod;
+    }
+    a.before:before,a.after:after{
+      content: "";
+      transition:0.5s all ease;
+      -webkit-backface-visibility:hidden;
+              backface-visibility:hidden;
+      position:absolute;
+    }
+    a.before:before{
+      top:-0.25em;
+    }
+    a.after:after{
+      bottom:-0.25em;
+    }
+    a.before:before,a.after:after{
+      height:5px;
+      height:0.35rem;
+      width:0;
+      background: darkgoldenrod;
+    }
+    a.first:after{
+      left:0;
+    }
+    a.second:after{
+      right:0;
+    }
+    a.third:after,a.sixth:before,a.sixth:after{
+      left:50%;
+      -webkit-transform:translateX(-50%);
+              transform:translateX(-50%);
+    }
+    a.before:hover:before,a.after:hover:after{
+      width:100%;
+    }
+  </style>
+</head>
+<body>
+  <section>
+    <div>
+      <h1>You have been successfully logged out!</h1>
+      <a href="https://reporting.allantan.site/authapp/login" class="sixth before after">Click here to login again!</a>
+    </div>
+  </section>
+</body>
+</html>

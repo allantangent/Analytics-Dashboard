@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <style>
+    body {
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background-color: slategrey;
+    }
+
+    .formContainer {
+      background-color: white;
+      width: 30vw;
+      height: 30vh;
+      display: grid;
+      place-items: center;
+      border-radius: 1em;
+      margin: 0;
+      box-shadow: 0 0 2em goldenrod;
+    }
+
+    input {
+      height: 4em;
+      border-width: 0 0 1px 0;
+    }
+
+    input:focus {
+      outline: none;
+      background-color: lightgoldenrodyellow;
+    }
+
+    .form {
+      display: grid;
+      grid-template-rows: 33% auto;
+      height: 100%;
+      width: 100%;
+      align-items: center;
+      padding-left: 1em;
+      justify-items: center;
+    }
+
+    button {
+      background-color: goldenrod;
+      border: none;
+      border-radius: 1em;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+      justify-self: right;
+      width: 100%;
+      margin-bottom: 1em;
+    }
+  </style>
+</head>
+<body>
+  <section class="formContainer">
+    <div class="form">
+      <h1>User Login</h1>
+      <form action="login" method="POST">
+        <input type="text" name="username" id="username" placeholder="Username/Email Address" autofocus size="30" required>
+        <br /> <br />
+        <input type="password" name="password" id="password" placeholder="Password" size="30" required>
+        <br /> <br />
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  </section>
+</body>
+</html>

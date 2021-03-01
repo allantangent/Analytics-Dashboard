@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+  <script src="https://cdn.zinggrid.com/zinggrid.min.js"></script>
+  <style>
+    body {
+      background-color: darkgray;
+    }
+
+    .chart--container {
+      height: 100%;
+      width: 100%;
+      min-height: 530px;
+    }
+
+    .link {
+      width: 100%;
+      background-color: white;
+      display: grid;
+      place-items: center;
+    }
+
+    a {
+      text-decoration: none;
+      font-size: 2em;
+      padding: 5px;
+    }
+  </style>
+</head>
+<body>
+  <br />
+  <div id="lineGraph" class="chart--container"></div>
+  <div id="pieChart" class="chart--container"></div>
+  <br />
+  <zing-grid src="https://allantan.site/api/errors" caption="Errors" context-menu="mymenu14" pager page-size="4" page-size-options="2,4,8">
+    <zg-menu id="mymenu14" replace="true">
+      <zg-button action="copycell">Copy Cell</zg-button>
+    </zg-menu>
+  </zing-grid>
+  <br/>
+  <script>
+    // get browser data (pie chart)
+    fetch('https://allantan.site/api/browsers')
+    .then(response => response.json())
+    .then(data => {
+      let osCount = {
+        'Mobile': 0,
+        'Tablet': 0,
+        'Desktop': 0,
+        'Other': 0
+      }
+      let total = 0;
+      for(let obj in data) {
+        if(data[obj].userAgent.includes("Mobi")) {
+          osCount['Mobile']++;
+        } else if(data[obj].userAgent.includes("Tablet")) {
+          osCount['Tablet']++;
+        } else if(data[obj].userAgent.includes("Desktop")) {
+          osCount['Desktop']++;
+        } else {
+          osCount['Desktop']++;
+        }
+      }
+
+      // calculate averages
+      for(let os in osCount) {
+        total += osCount[os];
+      }
+      let mobileCount = osCount['Mobile'] / total * 100;
+      let tabletCount = osCount['Tablet'] / total * 100;
+      let desktopCount = osCount['Desktop'] / total * 100;
+      let otherCount = osCount['Other'] / total * 100;
+
+      let chartConfig = {
+        type: 'pie',
+        backgroundColor: '#2B313B',
+        title: {
+          text: 'Visits by Device Type',
+          align: 'left',
+          fontColor: '#fff',
+          fontFamily: 'Open Sans',
+          fontSize: '25px',
+          offsetX: '10px',
+        },
+        subtitle: {
+          text: 'August 2020',
+          align: 'left',
+          fontColor: '#8e99a9',
+          fontFamily: 'Open Sans',
+          fontSize: '16px',
+          offsetX: '10px',
+          offsetY: '10px'
+        },
+        plot: {
+          tooltip: {
+            text: '%npv%',
+            padding: '5 10',
+            fontFamily: 'Open Sans',
+            fontSize: '18px'
+          },
+          valueBox: {
+            text: '%t\n%npv%',
+            fontFamily: 'Open Sans',
+            placement: 'out'
+          },
+          animation: {
+            effect: 'ANIMATION_EXPAND_VERTICAL',
+            method: 'ANIMATION_REGULAR_EASE_OUT',
+            sequence: 'ANIMATION_BY_PLOT',
+            speed: 500
+          },
+          borderColor: '#2B313B',
+          borderWidth: '5px'
+        },
+        plotarea: {
+          margin: '20 0 0 0'
+        },
+        source: {
+          text: 'Source: allantan.site',
+          fontColor: '#8e99a9',
+          fontFamily: 'Open Sans',
+          textAlign: 'left'
+        },
+        series: [
+          {
+            text: 'Mobile',
+            values: [mobileCount],
+            backgroundColor: '#FF7965'
+          },
+          {
+            text: 'Tablet',
+            values: [tabletCount],
+            backgroundColor: '#FFCB45'
+          },
+          {
+            text: 'Desktop/Other',
+            values: [desktopCount + otherCount],
+            backgroundColor: '#6877e5'
+          }
+        ]
+      };
+      zingchart.render({
+        id: 'pieChart',
+        data: chartConfig,
+        height: '100%',
+        width: '100%',
+      });
+    });
+
+    // get cls clsfinal(line graph)
+    function getCLS() {
+      return fetch('https://allantan.site/api/cls')
+      .then(response => response.json());
+    }
+    function getCLSFinal() {
+      return fetch('https://allantan.site/api/clsfinal')
+      .then(response => response.json());
+    }
+    function drawLineGraph() {
+      return Promise.all([getCLS(), getCLSFinal()]);
+    }
+
+    drawLineGraph()
+    .then(([clsData, finalData]) => {
+      let clsArr = [];
+      let finalArr = [];
+      let maxVal = 0;
+      for(let i in clsData) {
+        let data = clsData[i].data;
+        clsArr.push(+data);
+        if(data > maxVal) {
+          maxVal = data;
+        }
+      }
+      for(let i in finalData) {
+        let data = finalData[i].data;
+        finalArr.push(+data);
+        if(data > maxVal) {
+          maxVal = data;
+        }
+      }
+      let numUsers = clsArr.length;
+      maxVal++;
+      let chartData = [
+        {
+          text: 'Cumulative Layout Shift (CLS)',
+          values: clsArr,
+          lineColor: 'purple',
+        },
+        {
+          text: 'CLS Final',
+          values: finalArr,
+          lineColor: 'green',
+        },
+      ];
+
+      let chartConfig = {
+        type: 'line',
+        theme: 'classic',
+        backgroundColor: 'white',
+        title: {
+          text: 'CLS Metrics by Number of Users',
+          backgroundColor: 'white',
+          color: '#333',
+          textAlign: 'left',
+          width: '60%'
+        },
+        subtitle: {
+          text: 'Toggle a legend item to remove the series and adjust the scale.',
+          textAlign: 'left',
+          width: '60%'
+        },
+        legend: {
+          marginTop: '5%',
+          backgroundColor: 'white',
+          borderWidth: '0px',
+          item: {
+            cursor: 'hand'
+          },
+          layout: 'x1',
+          marker: {
+            borderWidth: '0px',
+            cursor: 'hand'
+          },
+          shadow: false,
+          toggleAction: 'remove'
+        },
+        plot: {
+          backgroundMode: 'graph',
+          backgroundState: {
+            lineColor: '#eee',
+            marker: {
+              backgroundColor: 'none'
+            }
+          },
+          lineWidth: '3px',
+          marker: {
+            size: '2px'
+          },
+          selectedState: {
+            lineWidth: '4px'
+          },
+          selectionMode: 'multiple'
+        },
+        plotarea: {
+          margin: '15% 20% 10% 7%'
+        },
+        scaleX: {
+          values: '1:' + numUsers + ':1'
+        },
+        scaleY: {
+          values: '0:' + maxVal,
+          scalFactor: 1,
+          lineColor: '#333',
+          decimals: 2,
+          format: '%vs'
+        },
+        tooltip: {
+          text: '%t: %vs for user %k'
+        },
+        series: chartData
+      };
+
+      zingchart.render({
+        id: 'lineGraph',
+        data: chartConfig
+      });
+    });
+  </script>
+  <br />
+  <div class="link">
+    <a href="/authapp/errors">Detailed Errors Report</a>
+  </div>
+  <br />
+  <div class="link">
+    <a href="/authapp/logout">Logout</a>
+  </div>
+</body>
+</html>
